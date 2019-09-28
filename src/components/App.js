@@ -1,41 +1,50 @@
 import React from 'react';
 import SearchBar from './SearchBar';
-import youtube from '../apis/youtube'
+import youtube from '../apis/youtube';
 import VideoList from './VideoList';
 import VideoDetail from './VideoDetail';
 
-
 class App extends React.Component {
-  state = {videos: [], selectedVideos: null}
+  state = {videos: [], selectedVideos: null};
 
-  onVideoSelect = (video)=>{
-    this.setState({selectedVideos: video})
+  componentDidMount(){
+    this.onTermSubmit('trees')
   }
 
-  onTermSubmit = async (term)=>{
-   const response = await youtube.get('/search', {
-       params: { 
-         q: term
-       }
-    })
-    this.setState({videos: response.data.items})
-  }
+  onVideoSelect = video => {
+    this.setState ({selectedVideos: video});
+  };
+
+  onTermSubmit = async term => {
+    const response = await youtube.get ('/search', {
+      params: {
+        q: term,
+      },
+    });
+    this.setState ({
+      videos: response.data.items,
+      selectedVideos: response.data.items[0]
+    });
+  };
   render () {
-    
     return (
-    <div className="ui container">
-      <SearchBar onFormSubmit = {this.onTermSubmit} />
-      
-        <VideoDetail video = {this.state.selectedVideos}/>
-      
-      <div>
-        <VideoList 
-        videos={this.state.videos} 
-        onVideoSelect = {this.onVideoSelect}
-        /></div>
-    </div>
-    
-    )
+      <div className="ui container">
+        <SearchBar onFormSubmit={this.onTermSubmit} />
+        <div className="ui grid">
+          <div className="ui row">
+            <div className="eleven wide column">
+            <VideoDetail video={this.state.selectedVideos} />
+            </div>
+          <div className="five wide column">
+            <VideoList
+              videos={this.state.videos}
+              onVideoSelect={this.onVideoSelect}
+            />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
